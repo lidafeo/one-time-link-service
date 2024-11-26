@@ -1,21 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { OneTimeLink } from './one-time-link.model';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class OneTimeLinkRepository {
-  private linksMap = new Map<string, OneTimeLink>();
+  constructor(private readonly redisService: RedisService) {}
 
-  create(oneTimeLink: OneTimeLink) {
-    this.linksMap.set(oneTimeLink.key, oneTimeLink);
-    return oneTimeLink;
+  async create(linkKey: string, content: string) {
+    await this.redisService.set(linkKey, content);
+    return this.redisService.get(linkKey);
   }
 
-  update(oneTimeLink: OneTimeLink) {
-    this.linksMap.set(oneTimeLink.key, oneTimeLink);
-    return oneTimeLink;
+  getAndDelete(linkKey: string): Promise<string | null> {
+    return this.redisService.getAndDel(linkKey);
   }
 
-  getByKey(linkKey: string) {
-    return this.linksMap.get(linkKey);
+  getByKey(linkKey: string): Promise<string | null> {
+    return this.redisService.get(linkKey);
   }
 }

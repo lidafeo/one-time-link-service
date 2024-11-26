@@ -6,7 +6,7 @@ export class OneTimeLinkController {
   constructor(private readonly oneTimeLinkService: OneTimeLinkService) {}
 
   @Post()
-  create(@Body('content') content?: string): string {
+  create(@Body('content') content?: string): Promise<string> {
     if (!content) {
       throw new BadRequestException('Content is required.');
     }
@@ -14,7 +14,7 @@ export class OneTimeLinkController {
   }
 
   @Get(':key')
-  get(@Param('key') key: string): string {
+  get(@Param('key') key: string): Promise<string> {
     return this.oneTimeLinkService.getContent(key);
   }
 }
